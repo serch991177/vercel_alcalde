@@ -1,0 +1,38 @@
+version: "3.7"
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: paginaalcalde-php
+    container_name: paginaalcalde-php
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - paginaalcalde-data-img:/var/www/public/img 
+    networks:
+      - paginaalcalde-network
+  nginx:
+    image: nginx:alpine
+    container_name: paginaalcalde-nginx
+    restart: unless-stopped
+    ports:
+      - 8027:8000
+    volumes:
+      - ./:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - paginaalcalde-data-img:/var/www/public/img
+    networks:
+      - paginaalcalde-network
+networks:
+  paginaalcalde-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.27.0/24
+volumes:
+  paginaalcalde-data-img:
+
